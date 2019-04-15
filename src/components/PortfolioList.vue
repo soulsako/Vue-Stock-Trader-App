@@ -4,15 +4,16 @@
         <app-base-box 
             v-for='portfolio in getPortfolios' 
             btnColor="btn-red"
-            btnText='Sell'
+            btnText='sell'
             :company='portfolio' 
-            :key='portfolio.name'
+            :key='portfolio.id'
             boxColor='red' />
     </div>
 </template>
 <script>
 import BaseBox from './BaseBox.vue'
 import { mapGetters } from 'vuex'
+
 export default {
     
     components: {

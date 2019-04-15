@@ -1,5 +1,5 @@
 <template>
-    <div class="box">
+    <div class="box" :style='{display: company.displayNone}'>
         <div class="box__top" :style='{backgroundColor: boxColor}'>
             <span class='box__top-name'>{{ company.name }}</span>
             <span class='box__top-price'>(Price: {{company.price}})</span>
@@ -8,12 +8,13 @@
         </div>
         <div class="box__bottom">
             <input type="number" v-model='quantity' placeholder='Quantity'>
-            <button :class='btnColor' @click='buy'>{{ btnText }}</button>
+            <button :class='btnColor' @click='transaction'>{{ btnText }}</button>
         </div>
     </div>
 </template>
 <script>
 import { mapActions } from 'vuex'
+
 export default {
     props: {
         company: {
@@ -40,20 +41,41 @@ export default {
     }, 
     methods: {
         ...mapActions([
-            'stockBought'
+            'stockBought',
+            'stockSold'
         ]), 
-        buy(){
+        transaction(){
+           this.btnText == 'buy' ? this.bought() : this.sold();
+        }, 
+        bought(){
             const funds = this.$store.state.funds,
-            value = this.quantity * this.company.price,
+            value = this.quantity * Number(this.company.price), 
             quantity = Number(this.quantity);
-            if(quantity === 0){
+            
+            if(this.quantity === 0){
                 return alert('Please enter a quantity');
             }
+            // Quantity reset to nothing to clear input field DO NOT USE THIS.QUANTITY TO ACCESS INPUT BEYOND THIS LINE
             this.quantity = '';
             if(value > funds){
                 return alert('Insuffcient funds for transaction. Please try a lower quantity');
             }
-            this.stockBought({...this.company, value, quantity})
+
+            this.stockBought({ ...this.company, value, quantity });
+        }, 
+        sold(){
+            const funds = this.$store.state.funds,
+            value = this.quantity * Number(this.company.price), 
+            quantity = Number(this.quantity);
+           
+            if(this.quantity === 0){
+                return alert('Please enter a quantity');
+            }
+            this.quantity = '';
+            if(value > this.company.value){
+                return alert('Insuffcient stocks for transaction. Please try a lower quantity');
+            }
+            this.stockSold({ ...this.company, value, quantity });
         }
     }
 }

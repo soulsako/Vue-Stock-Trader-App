@@ -3,7 +3,7 @@
         <app-base-box 
             v-for='company in getCompanies' 
             btnColor="btn-green"
-            btnText='Buy'
+            btnText='buy'
             :company='company' 
             :key='company.name'
             boxColor='green' />

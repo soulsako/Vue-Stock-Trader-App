@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
-
+// Prefer initializing your store's initial state with all desired fields upfront.
     state: {
         stocks: [
             { name: 'BMW', price: 110 }, 
@@ -21,26 +21,38 @@ export const store = new Vuex.Store({
     },
     mutations: {
 
-        updatePortfolio: (state, payload) => {
-            state.funds = state.funds - payload.value;
-            
-            const index = state.portfolios.findIndex(portfolio => {
-                portfolio.name === payload.name;
-            });
-            if(index === -1){
-                return state.portfolios.push(payload);
-            }
-            const copyState = [...state.portfolios];
-            const matchedPortfolio = copyState[index];
-            matchedPortfolio.quantity += payload.quantity;
-            matchedPortfolio.value += payload.value;
+        boughtStockUpdatePortfolio: (state, payload) => {
 
-            copyState[index] = matchedPortfolio;
-            return state = copyState;
-                      
+            state.funds = state.funds - payload.value;
+            const index = state.portfolios.findIndex(portfolio => portfolio.name === payload.name);
+           
+            if(index === -1){
+                return state.portfolios.push(payload)
+            }
+            //When adding new properties to an Object, replace that Object with a fresh one.
+            const matchedObject = {...state.portfolios[index]};
+            matchedObject.value += payload.value;
+            matchedObject.quantity += payload.quantity;
+            
+            state.portfolios[index] = matchedObject;
+
+        }, 
+        soldStockUpdatePortfolio: (state, payload) => {
+
+            state.funds = state.funds + payload.value;
+            const index = state.portfolios.findIndex(portfolio => portfolio.name === payload.name);
+        
+            //Here, however since we are not changing routes clicking the sell button the vue does not re-render the portfolio array. 
+            //Therefore we have to mutate the state directly
+
+            const matchedObject = state.portfolios[index];
+            matchedObject.value -= payload.value;
+            matchedObject.quantity -= payload.quantity;
+            state.portfolios[index] = matchedObject;   
         }
     },
     actions: {
-        stockBought: ({ commit }, payload) => commit('updatePortfolio', payload)
+        stockBought: ({ commit }, payload) => commit('boughtStockUpdatePortfolio', payload), 
+        stockSold: ({ commit }, payload) => commit('soldStockUpdatePortfolio', payload)
     }
 });
