@@ -7,7 +7,7 @@
             <span v-if='company.value' class='box__top-value'>worth: ${{company.value}}</span>
         </div>
         <div class="box__bottom">
-            <input type="number" v-model='quantity' placeholder='Quantity'>
+            <input type="number" min='1' v-model='quantity' placeholder='Quantity'>
             <button :class='btnColor' @click='transaction'>{{ btnText }}</button>
         </div>
     </div>
@@ -36,7 +36,7 @@ export default {
     }, 
     data(){
         return {
-            quantity: 0
+            quantity: null
         }
     }, 
     methods: {
@@ -52,7 +52,7 @@ export default {
             value = this.quantity * Number(this.company.price), 
             quantity = Number(this.quantity);
             
-            if(this.quantity === 0){
+            if(quantity === 0 || isNaN(quantity)){
                 return alert('Please enter a quantity');
             }
             // Quantity reset to nothing to clear input field DO NOT USE THIS.QUANTITY TO ACCESS INPUT BEYOND THIS LINE
@@ -68,7 +68,7 @@ export default {
             value = this.quantity * Number(this.company.price), 
             quantity = Number(this.quantity);
            
-            if(this.quantity === 0){
+            if(quantity === 0 || isNaN(quantity)){
                 return alert('Please enter a quantity');
             }
             this.quantity = '';

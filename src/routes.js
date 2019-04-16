@@ -8,6 +8,7 @@ export const router = new VueRouter({
     routes: [
        { path: '/', component: Banner }, 
        { path:'/stocks', component: StockList }, 
-       { path: '/portfolio', component: PortfolioList }
+       { path: '/portfolio', component: PortfolioList }, 
+       { path: '/end-day', component: StockList }
     ]
 })

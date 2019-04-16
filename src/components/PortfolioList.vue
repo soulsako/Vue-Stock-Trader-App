@@ -6,7 +6,7 @@
             btnColor="btn-red"
             btnText='sell'
             :company='portfolio' 
-            :key='portfolio.id'
+            :key='portfolio.name'
             boxColor='red' />
     </div>
 </template>

@@ -12,7 +12,12 @@
                 tag='li'
                 active-class='active' 
                 class="nav__list-listItem">Stocks</router-link>
-            <li class="nav__list-listItem">End Day</li>
+            <router-link 
+                to='/end-day' 
+                tag='li'
+                active-class='active' 
+                class="nav__list-listItem"
+                @click.native='endDay'>End Day</router-link>
             <li class="nav__list-listItem">Save & Load</li>     
                 <select name="saveAndLoad" id="saveAndLoad">
                     <option value="save">Save</option>
@@ -23,8 +28,25 @@
     </nav>
 </template>
 <script>
+
+import { mapActions } from 'vuex'
 export default {
-    
+  
+    methods: {
+        ...mapActions([
+            'dayEnded'
+        ]), 
+        endDay(){
+						const emptyArray = [[], [], [], []];
+						const randomNumbers = this.generateRandomNumbers(emptyArray);
+						this.dayEnded(randomNumbers);
+        },
+        generateRandomNumbers(emptyArray){
+            return emptyArray.map(curr => {
+							return Math.floor(Math.random() * (15 + 15 + 1)) - 15;
+						});
+        }
+    }
 }
 </script>
 <style lang='scss' scoped>
