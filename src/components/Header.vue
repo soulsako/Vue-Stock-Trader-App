@@ -1,6 +1,6 @@
 <template>
     <nav class='nav clearfix'>
-        <div class='nav__logo'>Stock Trader</div>
+        <router-link to='/' class='nav__logo'>Stock Trader</router-link>
         <ul class="nav__list">         
             <router-link 
                 to='/portfolio' 
@@ -12,42 +12,60 @@
                 tag='li'
                 active-class='active' 
                 class="nav__list-listItem">Stocks</router-link>
-            <router-link 
-                to='/end-day' 
-                tag='li'
-                active-class='active' 
-                class="nav__list-listItem"
-                @click.native='endDay'>End Day</router-link>
-            <li class="nav__list-listItem">Save & Load</li>     
-                <select name="saveAndLoad" id="saveAndLoad">
-                    <option value="save">Save</option>
-                    <option value="load">Load</option>
-                </select>          
-            <li class="nav__list-listItem"><strong>Funds: ${{ this.$store.state.funds }}.00</strong></li>          
+            <li class="nav__list-listItem" @click='endDay'>End Day</li>
+            <li @click='saveData' class="nav__list-listItem">Save</li>
+            <li class="nav__list-listItem">Load</li>                             
+            <li class="nav__list-listItem"><strong>Funds: ${{ getFunds }}.00</strong></li>          
         </ul>
     </nav>
 </template>
 <script>
 
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
-  
+		data(){
+			return {
+				portfoliosKey: 'portfolios', 
+				fundsKey: 'funds'
+			}
+		},
     methods: {
-        ...mapActions([
-            'dayEnded'
-        ]), 
-        endDay(){
-						const emptyArray = [[], [], [], []];
-						const randomNumbers = this.generateRandomNumbers(emptyArray);
-						this.dayEnded(randomNumbers);
-        },
-        generateRandomNumbers(emptyArray){
-            return emptyArray.map(curr => {
-							return Math.floor(Math.random() * (15 + 15 + 1)) - 15;
-						});
-        }
-    }
+			...mapActions([
+				'dayEnded', 
+				'portFromStorage', 
+				'fundsFromStorage'
+			]),
+			endDay(){
+					const emptyArray = [[], [], [], []];
+					const randomNumbers = this.generateRandomNumbers(emptyArray);
+					this.dayEnded(randomNumbers);
+			},
+			generateRandomNumbers(emptyArray){
+					return emptyArray.map(curr => {
+						return Math.floor(Math.random() * (15 + 15 + 1)) - 15;
+					});
+			}, 
+			saveData(){
+				localStorage.setItem(this.portfoliosKey, JSON.stringify(this.getPortfolios));
+				localStorage.setItem(this.fundsKey, JSON.stringify(this.getFunds));
+			}
+		}, 
+		computed: {
+			...mapGetters([
+					'getPortfolios', 
+					'getFunds'
+				])
+		}, 
+		mounted(){
+			const savedPortfolios = JSON.parse(localStorage.getItem(this.portfoliosKey));
+			const savedFunds = JSON.parse(localStorage.getItem(this.FundsKey));
+			if(savedPortfolios){
+				this.portFromStorage(savedPortfolios);
+				this.fundsFromStorage(Number(savedFunds));
+			}
+		}
 }
+
 </script>
 <style lang='scss' scoped>
 @import '../mixins/mixins';
@@ -64,6 +82,8 @@ export default {
             display: inline-block;
             float: left;
             padding: 1rem;
+            text-decoration: none;
+            color: inherit;
         }
         &__list {
             list-style: none;

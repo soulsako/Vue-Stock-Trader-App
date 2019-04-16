@@ -17,7 +17,8 @@ export const store = new Vuex.Store({
     },
     getters: {
        getCompanies: state => state.stocks, 
-       getPortfolios: state => state.portfolios
+			 getPortfolios: state => state.portfolios, 
+			 getFunds: state => state.funds
     },
     mutations: {
 
@@ -62,6 +63,9 @@ export const store = new Vuex.Store({
 					if(Math.sign(payload[oneFour]) === -1){
 						const numb = payload[oneFour].toString().split('-');
 						stock.price -= Number(numb[1]);
+						if(stock.price <= 0){
+							alert(`${stock.name} has gone bankrupt!`);
+						}
 					}else {
 						stock.price += payload[oneFour];	
 					}
@@ -70,14 +74,24 @@ export const store = new Vuex.Store({
 				if(state.portfolios.length === 0){
 					return;
 				}
-				state.portfolios.forEach(stock => {
-					stock.price = payload.price
+				// Set portfolio price to stock price and change value accordingly
+			  state.stocks.forEach(stock => {
+					state.portfolios.some(portfolio => {
+						if(portfolio.name === stock.name){
+							portfolio.price = stock.price;
+							portfolio.value = portfolio.price * portfolio.quantity;
+						}
+					})
 				})
-			 }
+			 }, 
+			 persistPortfolios: (state, payload) => state.portfolios = payload,
+			 persistFunds: (state, payload) => state.funds = payload
     },
     actions: {
 			stockBought: ({ commit }, payload) => commit('boughtStockUpdatePortfolio', payload), 
 			stockSold: ({ commit }, payload) => commit('soldStockUpdatePortfolio', payload),
-			dayEnded: ({ commit }, payload) => commit('dayEndedUpdateAll', payload)
+			dayEnded: ({ commit }, payload) => commit('dayEndedUpdateAll', payload), 
+			portFromStorage: ({commit}, payload) => commit('persistPortfolios', payload),
+			fundsFromStorage: ({commit}, payload) => commit('persistFunds', payload)
     }
 });
